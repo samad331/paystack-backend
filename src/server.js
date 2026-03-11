@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const ports = process.env.BASE_URL;
+const ports = process.env.PORT || 3005;
 const db = require('./config/database');
 const path = require('path');
 const authController = require('./controllers/auth.controller');
@@ -91,6 +91,6 @@ app.post('/paystack/transfer-funds',AuthMiddleware.verifyToken,AuthMiddleware.ch
 
 
 app.listen(ports, () => {
-  console.log(`Server is running on  ${process.env.BASE_URL}`);
+  console.log(`Server is running on port ${ports}`);
   
 });
