@@ -10,7 +10,7 @@ if (process.env.SENDGRID_API_KEY) {
 // Create Nodemailer transporter for Gmail fallback
 const createTransporter = () => {
     if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
-        return nodemailer.createTransporter({
+        return nodemailer.createTransport({
             host: 'smtp.gmail.com',
             port: 587,
             secure: false,
