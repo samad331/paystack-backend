@@ -11,16 +11,16 @@ const transporter = nodemailer.createTransport({
     },
     tls: {
         rejectUnauthorized: false 
-    }
+    },
+    connectionTimeout: 10000,
+    socketTimeout: 10000
 });
 
-
-transporter.verify(function(error, success) {
-    if (error) {
-        console.error('SMTP configuration error:', error);
-    } else {
-        console.log('SMTP server is ready to send emails');
-    }
+// Verify async without blocking startup
+transporter.verify().then(() => {
+    console.log('SMTP server is ready to send emails');
+}).catch(error => {
+    console.warn('SMTP verification failed (non-blocking):', error.message);
 });
 
 async function send_Email({ to, subject, text }) {
@@ -31,12 +31,17 @@ async function send_Email({ to, subject, text }) {
         text
     };
 
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+        console.error('SMTP credentials not configured');
+        throw new Error('Email service not configured. Missing GMAIL_USER or GMAIL_PASS');
+    }
+
     try {
         const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent:', info.response);
+        console.log('Email sent successfully to:', to);
         return info;
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('Error sending email to', to, ':', error.message);
         throw error;
     }
 }

@@ -47,6 +47,7 @@ class AuthController {
                     
                     if(process.env.SEND_EMAIL==='true') {
                         try {
+                            console.log('[MAIL] SEND_EMAIL is enabled, attempting to send verification email to:', email);
                             const requestBaseUrl = `${req.protocol}://${req.get('host')}`;
                             const apiBaseUrl = (process.env.BASE_URL || requestBaseUrl).replace(/\/$/, '');
                             const verificationUrl = `${apiBaseUrl}/verify?token=${encodeURIComponent(token)}`;
@@ -58,11 +59,13 @@ class AuthController {
                                 subject, 
                                 text 
                             });
-                            console.log('Verification email sent successfully');
+                            console.log('[MAIL] Verification email sent successfully to:', email);
                         } catch (error) {
-                            console.error('Failed to send verification email:', error);
-                            
+                            console.error('[MAIL] Failed to send verification email to', email, ':', error.message);
+                            return res.status(500).json({ error: 'Failed to send verification email. Please try again later.' });
                         }
+                    } else {
+                        console.warn('[MAIL] SEND_EMAIL is not enabled. Skipping verification email for:', email);
                     }
                     
                     res.status(201).json({
