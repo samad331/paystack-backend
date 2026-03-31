@@ -47,7 +47,7 @@ class AuthController {
                     
                     const requestBaseUrl = `${req.protocol}://${req.get('host')}`;
                     const apiBaseUrl = (process.env.BASE_URL || requestBaseUrl).replace(/\/$/, '');
-                    const verificationUrl = `${apiBaseUrl}/verify?token=${encodeURIComponent(token)}`;
+                    const verificationUrl = `${apiBaseUrl}/verify/${encodeURIComponent(token)}`;
 
                     if(process.env.SEND_EMAIL==='true') {
                         try {
@@ -114,7 +114,7 @@ class AuthController {
     }
 
     async verifyEmail(req, res) {
-        const { token } = req.query;
+        const { token } = req.params;
         if (!token) {
             return res.status(400).json({ error: 'Token is required' });
         }

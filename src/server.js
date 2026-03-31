@@ -77,7 +77,7 @@ app.get('/', (req, res) => {
 });
 app.post('/register', (req, res) => authController.register(req, res));
 app.post('/login', (req, res) => authController.login(req, res));
-app.get('/verify', (req, res) => authController.verifyEmail(req, res));
+app.get('/verify/:token', (req, res) => authController.verifyEmail(req, res));
 app.post('/send-password-reset', (req, res) => authController.sendPasswordReset(req, res));
 app.post('/reset-password', (req, res) => authController.resetPassword(req, res));
 ``
