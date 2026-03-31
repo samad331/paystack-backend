@@ -45,12 +45,13 @@ class AuthController {
                         return res.status(500).json({ error: 'Database error' });
                     }
                     
+                    const requestBaseUrl = `${req.protocol}://${req.get('host')}`;
+                    const apiBaseUrl = (process.env.BASE_URL || requestBaseUrl).replace(/\/$/, '');
+                    const verificationUrl = `${apiBaseUrl}/verify?token=${encodeURIComponent(token)}`;
+
                     if(process.env.SEND_EMAIL==='true') {
                         try {
                             console.log('[MAIL] SEND_EMAIL is enabled, attempting to send verification email to:', email);
-                            const requestBaseUrl = `${req.protocol}://${req.get('host')}`;
-                            const apiBaseUrl = (process.env.BASE_URL || requestBaseUrl).replace(/\/$/, '');
-                            const verificationUrl = `${apiBaseUrl}/verify?token=${encodeURIComponent(token)}`;
                             const subject = 'Verify your email';
                             const text = `Please click the following link to verify your email: ${verificationUrl}`;
 
@@ -67,14 +68,15 @@ class AuthController {
                     } else {
                         console.warn('[MAIL] SEND_EMAIL is not enabled. Skipping verification email for:', email);
                     }
-                    
+
                     res.status(201).json({
                         status: 'successful',
                         message: 'User registered successfully',
                         data: {
                             id: this.lastID,
                             email,
-                            username
+                            username,
+                            verificationUrl
                         }
                     });
                 }

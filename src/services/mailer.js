@@ -7,8 +7,27 @@ if (process.env.SENDGRID_API_KEY) {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 }
 
-// Create Nodemailer transporter for Gmail fallback
+// Create Nodemailer transporter for the first available provider
 const createTransporter = () => {
+    // Use Mailgun SMTP if configured
+    if (process.env.MAILGUN_SMTP_USER && process.env.MAILGUN_SMTP_PASS) {
+        return nodemailer.createTransport({
+            host: process.env.MAILGUN_SMTP_HOST || 'smtp.mailgun.org',
+            port: Number(process.env.MAILGUN_SMTP_PORT) || 587,
+            secure: false,
+            auth: {
+                user: process.env.MAILGUN_SMTP_USER,
+                pass: process.env.MAILGUN_SMTP_PASS
+            },
+            tls: {
+                rejectUnauthorized: false
+            },
+            connectionTimeout: 10000,
+            socketTimeout: 10000
+        });
+    }
+
+    // Use Gmail SMTP if configured
     if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
         return nodemailer.createTransport({
             host: 'smtp.gmail.com',
