@@ -24,7 +24,7 @@ class PaystackController {
                             }
                         ]
                     },
-                    callback_url: `${process.env.BASE_URL}/payment/verify`
+                    callback_url: `${(process.env.FRONTEND_BASE_URL || process.env.BASE_URL || 'http://localhost:3000').replace(/\/$/, '')}/payment/verify`
                 },
                 {
                     headers: {
